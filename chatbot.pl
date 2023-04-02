@@ -5,7 +5,7 @@ chat:-
     converse.
 
 welcome:-
-    write('Hello there! I am MedBot. I\'m here to help you with any health concerns you may have.'), nl.
+    format('Hello there! I am MedBot. I\'m here to help you with any health concerns you may have.'), nl.
 
 converse:-
     ask(Patient),
@@ -97,33 +97,31 @@ refer_medical(influenza):-
 refer_medical(Disease):- !.
 
 ask(Patient):-   
-    write('What\'s the patient\'s name? Type your name in lowercase letters.'),nl,
-    read(Patient),
-    write('The patient\'s name is: '), write(Patient), nl.
+    format('What\'s the patient\'s name? Type name in lowercase letters.~n'),
+    read(Patient).
 
 ask_age(Patient, Age):-   
-    repeat, write('What\'s the patient\'s age?'), nl,   
+    repeat, format('What\'s the ~w\'s age?~n', [Patient]),   
     read(Age),
-    number(Age), Age >= 1, Age =< 999, write('Your age is: '), write(Age), nl.  
+    number(Age), Age >= 1, Age =< 999.  
                                       
 ask_sex(Patient, Sex):-   
-    repeat, write('What\'s the patient\'s sex? m/f'), nl,   
+    repeat, format('What\'s the patient\'s sex? m/f~n'),
     read(Sex),  
-    valid_sex(Sex), write('Your sex is: '), write(Sex), nl.  
+    valid_sex(Sex).  
 
 ask_weight(Patient, Weight):-
-	repeat, write('What\'s the patient\'s weight in kg?'), nl,   
+	repeat, format('What\'s ~w\'s weight in kg? ~n', [Patient]),    
     read(Weight),  
-    number(Weight), Weight >= 1, Weight =< 999, write('Your weight is: '), write(Weight), nl. 
+    number(Weight), Weight >= 1, Weight =< 999. 
 
 ask_height(Patient, Height):-
-    repeat, write('What\'s the patient\'s height in cm?'), nl,   
+    repeat, format('What\'s ~w\'s height in cm?', [Patient]), nl,   
     read(Height),  
-    number(Height), Height >= 1, Height =< 999, write('Your height is: '), write(Height), nl.
+    number(Height), Height >= 1, Height =< 999.
 
 compute_BMI(Weight, Height, BMI):-
-    BMI is Weight / ((Height / 100) * (Height / 100)),
-    write('Your BMI is: '), write(BMI), nl.
+    BMI is Weight / ((Height / 100) * (Height / 100)).
     
 ask_symptoms:-
     is_main_symptom(MainSymptoms),
@@ -146,8 +144,6 @@ patient_has([Symptom | OtherSymptoms]) :-
             assert(has_symptom(Patient, Symptom)),
             assert(patient_symptoms(Symptom)),
             assert(asked_symptom(Symptom)),
-            format('Based on your input, the following symptoms were recorded:~n', []),
-            show_patient_symptoms,
             findall(ExistingSymp, patient_symptoms(ExistingSymp), PatientSymptomsList),
             find_symptoms(PatientSymptomsList, NewSymptoms),
             write(NewSymptoms),
@@ -164,16 +160,6 @@ find_symptoms(FilterList, Symptoms) :-
     print([FilterList]), nl,
     findall(S, (disease(_, S), subset(FilterList, S)), SymptomLists),
     flatten(SymptomLists, Symptoms).
-
-show_patient_symptoms :-
-    findall(Symptom, patient_symptoms(Symptom), Symptoms),
-    show_symptoms(Symptoms).
-
-show_symptoms([]) :- !.
-
-show_symptoms([Symptom|OtherSymptoms]) :-
-    format('- ~w~n', [Symptom]),
-    show_symptoms(OtherSymptoms).
 
 count_symptoms(Disease, PatientSymptoms, Count):-
     disease(Disease, Symptoms),
