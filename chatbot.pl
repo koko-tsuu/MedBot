@@ -56,6 +56,8 @@ additional_q(Patient, [Q|ListOfQuestions], [A|AnswerLabels]):-
             ;   true)
         ).
 
+higher_likelihood(_, _, [], _) :- true.
+
 
 higher_likelihood(Patient, Disease, Questions, AnswerLabels):-
     count_likelihood_symptoms(Patient, AnswerLabels, Count),
@@ -106,7 +108,7 @@ ask_age(Patient, Age):-
     number(Age), Age >= 1, Age =< 999.  
                                       
 ask_sex(Patient, Sex):-   
-    repeat, format('What\'s the patient\'s sex? m/f~n'),
+    repeat, format('What\'s ~w\'s sex? m/f~n', [Patient]),
     read(Sex),  
     valid_sex(Sex).  
 
