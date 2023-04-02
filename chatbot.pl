@@ -28,7 +28,7 @@ diagnosis(Patient, Age, BMI, Sex) :-
 
         probability(Patient, Disease),
         (higher_likelihood(Disease, Patient, Age, BMI, Sex, AnswerLabels) ->
-            format('Based on patient ~w\'s risk factors (age, BMI, and sex) and with the given information, it appears that they are at a higher likelihood of currently having this condition.~n', [Patient])
+            format('Based on the given information, it appears that they are at a higher likelihood of currently having this condition.~n', [Patient])
          ; true), 
         
         %insert here yung refer to med facility for more tests
