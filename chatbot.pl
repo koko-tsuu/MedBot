@@ -79,12 +79,12 @@ probability(Patient, Disease):-
     ;    true).
 
 
-refer_medical(uti, 'Urinalysis and/or Urine Culture').
-refer_medical(psoriasis, 'Skin biopsy, Blood test, and Joint Imaging').
-refer_medical(diarrhea, 'Stool test, Blood test, and Endoscopy').
-refer_medical(tuberculosis, 'Tuberculin skin test, TB blood tests, Chest X-ray, and Sputum test').
-refer_medical(chickenpox, 'Viral culture, PCR test, and Blood test').
-refer_medical(influenza, 'Viral culture, Rapid Influenza diagnostic test, and RT-PCR test').
+refer_medical(uti, ['Urinalysis and/or Urine Culture']).
+refer_medical(psoriasis, ['Skin biopsy, Blood test, and Joint Imaging']).
+refer_medical(diarrhea, ['Stool test, Blood test, and Endoscopy']).
+refer_medical(tuberculosis, ['Tuberculin skin test, TB blood tests, Chest X-ray, and Sputum test']).
+refer_medical(chickenpox, ['Viral culture, PCR test, and Blood test']).
+refer_medical(influenza, ['Viral culture, Rapid Influenza diagnostic test, and RT-PCR test']).
 
 ask(Patient):-   
     write('What\'s the patient\'s name? Type your name in lowercase letters.'),nl,
