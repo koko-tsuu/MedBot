@@ -1,4 +1,4 @@
-:-dynamic  additional_q_db/2, additional_a_db/2, additional_answers/2, has_symptom/2, patient_symptoms/1, asked_symptom/1.
+:-dynamic refer_medical/1, additional_q_db/2, additional_a_db/2, additional_answers/2, has_symptom/2, patient_symptoms/1, asked_symptom/1.
 
 chat:-
     welcome,
@@ -33,12 +33,8 @@ diagnosis(Patient, Age, BMI, Sex) :-
         
         %insert here yung refer to med facility for more tests
         % if disease has refer med, -> print, if no, true
-        ( 	refer_medical(Disease, Statement),
-            length(Statement, StatementLength),
-            (StatementLength > 0)-> 
-            format('Refer to a medical facility for ~w for an accurate diagnosis.', [Statement])
-            ; true
-        )
+         	refer_medical(Disease)
+         
         ;    true)
 
     ;  format('Unfortunately, we cannot diagnose ~w with any disease right now based on your symptoms. 
@@ -79,12 +75,19 @@ probability(Patient, Disease):-
     ;    true).
 
 
-refer_medical(uti, ['Urinalysis and/or Urine Culture']).
-refer_medical(psoriasis, ['Skin biopsy, Blood test, and Joint Imaging']).
-refer_medical(diarrhea, ['Stool test, Blood test, and Endoscopy']).
-refer_medical(tuberculosis, ['Tuberculin skin test, TB blood tests, Chest X-ray, and Sputum test']).
-refer_medical(chickenpox, ['Viral culture, PCR test, and Blood test']).
-refer_medical(influenza, ['Viral culture, Rapid Influenza diagnostic test, and RT-PCR test']).
+refer_medical(uti):-
+	write('Refer to a medical facility for Urinalysis and/or Urine Culture for an accurate diagnosis.').
+refer_medical(psoriasis):- 
+    write('Refer to a medical facility for Skin biopsy, Blood test, and Joint Imaging for an accurate diagnosis.').
+refer_medical(diarrhea):-
+    write('Refer to a medical facility for Stool test, Blood test, and Endoscopy for an accurate diagnosis.').
+refer_medical(tuberculosis):-
+    write('Refer to a medical facility for Tuberculin skin test, TB blood tests, Chest X-ray, and Sputum test for an accurate diagnosis.').
+refer_medical(chickenpox):-
+	write('Refer to a medical facility for Viral culture, PCR test, and Blood test for an accurate diagnosis.').
+refer_medical(influenza):-
+    write('Refer to a medical facility for Viral culture, Rapid Influenza diagnostic test, and RT-PCR test for an accurate diagnosis.').
+refer_medical(Disease).
 
 ask(Patient):-   
     write('What\'s the patient\'s name? Type your name in lowercase letters.'),nl,
@@ -261,13 +264,13 @@ diagnose(Patient, hypertension):-
     has_symptom(Patient, loud_heartbeat)).
 
 diagnose(Patient, uti):-
+    has_symptom(Patient, urination_pain),
     has_symptom(Patient, frequent_urination),
-    (has_symptom(Patient, urination_pain);
-    has_symptom(Patient, pelvic_pressure);
-    has_symptom(Patient, chills);
-    has_symptom(Patient, lower_back_pain);
-    has_symptom(Patient, nausea);
-    has_symptom(Patient, fever)).
+    has_symptom(Patient, pelvic_pressure),
+    has_symptom(Patient, chills),
+    has_symptom(Patient, lower_back_pain),
+    has_symptom(Patient, nausea),
+    has_symptom(Patient, fever).
 
 diagnose(Patient, influenza):-
     has_symptom(Patient, fever),
