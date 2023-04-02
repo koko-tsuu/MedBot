@@ -261,13 +261,13 @@ diagnose(Patient, hypertension):-
     has_symptom(Patient, loud_heartbeat)).
 
 diagnose(Patient, uti):-
-    has_symptom(Patient, urination_pain),
     has_symptom(Patient, frequent_urination),
-    has_symptom(Patient, pelvic_pressure),
-    has_symptom(Patient, chills),
-    has_symptom(Patient, lower_back_pain),
-    has_symptom(Patient, nausea),
-    has_symptom(Patient, fever).
+    (has_symptom(Patient, urination_pain);
+    has_symptom(Patient, pelvic_pressure);
+    has_symptom(Patient, chills);
+    has_symptom(Patient, lower_back_pain);
+    has_symptom(Patient, nausea);
+    has_symptom(Patient, fever)).
 
 diagnose(Patient, influenza):-
     has_symptom(Patient, fever),
