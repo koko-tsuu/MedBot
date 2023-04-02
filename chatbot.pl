@@ -27,18 +27,15 @@ diagnosis(Patient, Age, BMI, Sex) :-
         ;    true),
 
         probability(Patient, Disease),
-        (higher_likelihood(Disease, Patient, Age, BMI, Sex, AnswerLabels) ->
-            format('Based on the given information of ~w, it appears that they are at a higher likelihood of currently having this condition.~n', [Patient])
-         ; true), 
-        
-        %insert here yung refer to med facility for more tests
-        % if disease has refer med, -> print, if no, true
-         	refer_medical(Disease)
+        (higher_likelihood(Disease, Patient, Age, BMI, Sex) ->
+            format('Based on the risk factors (age, BMI, Sex) of ~w, it appears that they are at a higher likelihood of currently having this condition.~n', [Patient])
+         ; true),
+        higher_likelihood(Patient, Disease, Questions, AnswerLabels),
+        refer_medical(Disease)
          
         ;    true)
 
-    ;  format('Unfortunately, we cannot diagnose ~w with any disease right now based on your symptoms. 
-                ~n However, ~w can always go to the local clinic and ask for a check-up.~n', [Patient, Patient])
+    ;  format('Unfortunately, we cannot diagnose ~w with any disease right now based on your symptoms. ~n However, ~w can always go to the local clinic and ask for a check-up.~n', [Patient, Patient])
     ).
 
 additional_q(Patient, [Q|ListOfQuestions], [A|AnswerLabels]):-
@@ -60,6 +57,15 @@ additional_q(Patient, [Q|ListOfQuestions], [A|AnswerLabels]):-
         ).
 
 
+higher_likelihood(Patient, Disease, Questions, AnswerLabels):-
+    count_likelihood_symptoms(Patient, AnswerLabels, Count),
+    length(Questions, LengthQ),
+    (
+        Count > LengthQ * 0.25 ->
+            (format('Also, the patient\'s reported symptoms and medical history show that the probability of having ~w is higher.~n', [Disease]))
+    );
+    true.
+
 % di ko pa natetest to hehe
 probability(Patient, Disease):-
     findall(Symptom, patient_symptoms(Symptom), PatientSymptoms),
@@ -67,26 +73,26 @@ probability(Patient, Disease):-
     disease(Disease, AllSymptoms),
     length(AllSymptoms, NumSymptoms),
     (   (Count >= NumSymptoms*0.25, Count < NumSymptoms*0.5) ->
-    	format('You may have ~w disease. ~n', [Disease]) 
+    	format('The patient may have ~w disease. ~n', [Disease]) 
     ; (   Count >= NumSymptoms*0.5, Count < NumSymptoms*0.75) -> 
-    	format('You likely have ~w disease. ~n', [Disease]) 
+    	format('The patient likely have ~w disease. ~n', [Disease]) 
     ; (   Count >= NumSymptoms*0.75) -> 
-    format('You most likely have ~w disease. ~n', [Disease])
+    format('The patient most likely have ~w disease. ~n', [Disease])
     ;    true).
 
 
 refer_medical(uti):-
-	write('Refer to a medical facility for Urinalysis and/or Urine Culture for an accurate diagnosis.').
+	format('Refer to a medical facility for Urinalysis and/or Urine Culture for an accurate diagnosis.').
 refer_medical(psoriasis):- 
-    write('Refer to a medical facility for Skin biopsy, Blood test, and Joint Imaging for an accurate diagnosis.').
+    format('Refer to a medical facility for Skin biopsy, Blood test, and Joint Imaging for an accurate diagnosis.').
 refer_medical(diarrhea):-
-    write('Refer to a medical facility for Stool test, Blood test, and Endoscopy for an accurate diagnosis.').
+    format('Refer to a medical facility for Stool test, Blood test, and Endoscopy for an accurate diagnosis.').
 refer_medical(tuberculosis):-
-    write('Refer to a medical facility for Tuberculin skin test, TB blood tests, Chest X-ray, and Sputum test for an accurate diagnosis.').
+    format('Refer to a medical facility for Tuberculin skin test, TB blood tests, Chest X-ray, and Sputum test for an accurate diagnosis.').
 refer_medical(chickenpox):-
-	write('Refer to a medical facility for Viral culture, PCR test, and Blood test for an accurate diagnosis.').
+	format('Refer to a medical facility for Viral culture, PCR test, and Blood test for an accurate diagnosis.').
 refer_medical(influenza):-
-    write('Refer to a medical facility for Viral culture, Rapid Influenza diagnostic test, and RT-PCR test for an accurate diagnosis.').
+    format('Refer to a medical facility for Viral culture, Rapid Influenza diagnostic test, and RT-PCR test for an accurate diagnosis.').
 refer_medical(Disease).
 
 ask(Patient):-   
@@ -198,57 +204,43 @@ count_likelihood_symptoms(Patient, AnswerLabels, Count):-
     findall(Answer, (member(Answer, AnswerLabels), additional_answers(Patient, Answer)), CountedLikelihoodSymptoms),
     length(CountedLikelihoodSymptoms, Count).
 
-higher_likelihood(hypertension, Patient, Age, BMI, Gender, AnswerLabels):-
+higher_likelihood(hypertension, Patient, Age, BMI, Gender):-
     (Gender == f, Age > 65) ; 
      Age >= 40; 
      Gender == m;
      BMI > 24.9.
 
-higher_likelihood(uti, Patient, Age, BMI, Gender, AnswerLabels):-
+higher_likelihood(uti, Patient, Age, BMI, Gender):-
     Gender == f; 
     Age < 5;
     Age >= 65;
     BMI < 18.5; 
-    BMI > 24.9;
-    (count_likelihood_symptoms(Patient, AnswerLabels, Count),
-    Count >= 1).
+    BMI > 24.9.
 
-higher_likelihood(diabetes, Patient, Age, BMI, Gender, AnswerLabels):-
+higher_likelihood(diabetes, Patient, Age, BMI, Gender):-
     BMI > 24.9;
-    Age > 45;
-    (count_likelihood_symptoms(Patient, AnswerLabels, Count),
-    Count >= 1).
+    Age > 45.
 
-higher_likelihood(psoriasis, Patient, Age, BMI, Gender, AnswerLabels):-
+higher_likelihood(psoriasis, Patient, Age, BMI, Gender):-
     (Age >= 20, Age =< 30);
     (Age >= 50, Age =< 60);
-    BMI > 18.5;
-    (count_likelihood_symptoms(Patient, AnswerLabels, Count),
-    Count >= 1).
+    BMI > 18.5.
 
-higher_likelihood(diarrhea, Patient, Age, BMI, Gender, AnswerLabels):-
+higher_likelihood(diarrhea, Patient, Age, BMI, Gender):-
     Age < 5;
-    BMI > 24.9;
-    (count_likelihood_symptoms(Patient, AnswerLabels, Count),
-    Count >= 1).
+    BMI > 24.9.
 
-higher_likelihood(tuberculosis, Patient, Age, BMI, Gender, AnswerLabels):-
+higher_likelihood(tuberculosis, Patient, Age, BMI, Gender):-
     Age >= 65;
-    BMI < 18.5;
-    (count_likelihood_symptoms(Patient, AnswerLabels, Count),
-    Count >= 1).
+    BMI < 18.5.
 
-higher_likelihood(chickenpox, Patient, Age, BMI, Gender, AnswerLabels):-
-    Age < 10;
-    (count_likelihood_symptoms(Patient, AnswerLabels, Count),
-    Count >= 1).
+higher_likelihood(chickenpox, Patient, Age, BMI, Gender):-
+    Age < 10.
 
-higher_likelihood(influenza, Patient, Age, BMI, Gender, AnswerLabels):-
+higher_likelihood(influenza, Patient, Age, BMI, Gender):-
     Age < 5;
     Age > 65;
-    BMI >= 30;
-    (count_likelihood_symptoms(Patient, AnswerLabels, Count),
-    Count >= 1).
+    BMI >= 30.
 
 diagnose(Patient, scabies):-
     has_symptom(Patient, burrows),
