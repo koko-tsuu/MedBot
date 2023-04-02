@@ -30,8 +30,8 @@ diagnosis(Patient, Age, BMI, Sex) :-
         (higher_likelihood(Disease, Patient, Age, BMI, Sex) ->
             format('Based on the risk factors (age, BMI, Sex) of ~w, it appears that they are at a higher likelihood of currently having this condition.~n', [Patient])
          ; true),
-        higher_likelihood(Patient, Disease, Questions, AnswerLabels),
-        refer_medical(Disease)
+            higher_likelihood(Patient, Disease, Questions, AnswerLabels),
+            refer_medical(Disease)
          
         ;    true)
 
@@ -64,7 +64,8 @@ higher_likelihood(Patient, Disease, Questions, AnswerLabels):-
         Count > LengthQ * 0.25 ->
             (format('Also, the patient\'s reported symptoms and medical history show that the probability of having ~w is higher.~n', [Disease]))
     );
-    true.
+    true,
+    !.
 
 % di ko pa natetest to hehe
 probability(Patient, Disease):-
@@ -93,7 +94,7 @@ refer_medical(chickenpox):-
 	format('Refer to a medical facility for Viral culture, PCR test, and Blood test for an accurate diagnosis.').
 refer_medical(influenza):-
     format('Refer to a medical facility for Viral culture, Rapid Influenza diagnostic test, and RT-PCR test for an accurate diagnosis.').
-refer_medical(Disease).
+refer_medical(Disease):- !.
 
 ask(Patient):-   
     write('What\'s the patient\'s name? Type your name in lowercase letters.'),nl,
