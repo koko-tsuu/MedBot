@@ -148,7 +148,6 @@ patient_has([Symptom | OtherSymptoms]) :-
             assert(asked_symptom(Symptom)),
             findall(ExistingSymp, patient_symptoms(ExistingSymp), PatientSymptomsList),
             find_symptoms(PatientSymptomsList, NewSymptoms),
-            write(NewSymptoms),
             patient_has(NewSymptoms)
             ;
             Response == no ->
