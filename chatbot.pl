@@ -180,7 +180,7 @@ disease(tuberculosis, [cough, bloody_cough, fatigue, weight_loss, night_sweats, 
 disease(chickenpox, [fever, skin_rash, blisters, scabs, headache, fatigue, appetite_loss, body_aches, itching]).
 disease(influenza, [fever, cough, sore_throat, runny_nose, body_aches, headache, chills, fatigue]).
 
-is_main_symptom([fever, cough, sore_throat, high_bp, burrows, abnormal_chest_sounds, bloody_cough, loose_stools, frequent_urination, extreme_thirst]).
+is_main_symptom([fever, cough, sore_throat, high_bp, burrows, bloody_cough, loose_stools, frequent_urination, extreme_thirst]).
 is_supporting_symptom([headache, nosebleed, breath_shortness, loud_heartbeat, itching, skin_rash, itchy_rash, chills, 
                        chest_pain, nausea, breath_shortness, chest_congestion, wheezing,  bloating, thirst, abdominal_pain, 
                        change_in_bowel_habits, fatigue, weight_loss, night_sweats, body_aches, joint_pain, red_throat, yellow_discoloration,
