@@ -272,9 +272,9 @@ diagnose(Patient, dengue):-
     has_symptom(Patient, fatigue)).
 
 diagnose(Patient, diabetes):-
-    has_symptom(Patient, extreme_hunger), 
-    has_symptom(Patient, extreme_thirst),
-    has_symptom(Patient, weight_loss),
+    (has_symptom(Patient, extreme_hunger); 
+    has_symptom(Patient, extreme_thirst);
+    has_symptom(Patient, weight_loss)),
     (has_symptom(Patient, frequent_urination);
     has_symptom(Patient, fatigue);
     has_symptom(Patient, blurry_vision);
