@@ -38,65 +38,7 @@ diagnosis(Patient, Age, BMI, Sex) :-
     ;  format('Unfortunately, we cannot diagnose ~w with any disease right now based on your symptoms. ~n However, ~w can always go to the local clinic and ask for a check-up.~n', [Patient, Patient])
     ).
 
-additional_q(Patient, [Q|ListOfQuestions], [A|AnswerLabels]):-
-        format('~w~nAnswer "yes" or "no": ', [Q]),
-        nl,
-        read(Response),
-        length(ListOfQuestions, Length),
-        (Response = yes ; Response = no),
-        (   Response == yes ->
-            assert(additional_answers(Patient, A)),
-            ( Length > 0 ->  
-            	additional_q(Patient, ListOfQuestions, AnswerLabels)
-            ;   true
-            )
-         ; Response == no ->
-        	( Length > 0 ->  
-        	additional_q(Patient, ListOfQuestions, AnswerLabels)
-            ;   true)
-        ).
-
-higher_likelihood(_, _, [], _) :- true.
-
-
-higher_likelihood(Patient, Disease, Questions, AnswerLabels):-
-    count_likelihood_symptoms(Patient, AnswerLabels, Count),
-    length(Questions, LengthQ),
-    (
-        Count > LengthQ * 0.25 ->
-            (format('Also, the patient\'s reported symptoms and medical history show that the probability of having ~w is higher.~n', [Disease]))
-    );
-    true,
-    !.
-
-% di ko pa natetest to hehe
-probability(Patient, Disease):-
-    findall(Symptom, patient_symptoms(Symptom), PatientSymptoms),
-    count_symptoms(Disease, PatientSymptoms, Count),
-    disease(Disease, AllSymptoms),
-    length(AllSymptoms, NumSymptoms),
-    (   (Count >= NumSymptoms*0.25, Count < NumSymptoms*0.5) ->
-    	format('The patient may have ~w disease. ~n', [Disease]) 
-    ; (   Count >= NumSymptoms*0.5, Count < NumSymptoms*0.75) -> 
-    	format('The patient likely have ~w disease. ~n', [Disease]) 
-    ; (   Count >= NumSymptoms*0.75) -> 
-    format('The patient most likely have ~w disease. ~n', [Disease])
-    ;    true).
-
-
-refer_medical(uti):-
-	format('Refer to a medical facility for Urinalysis and/or Urine Culture for an accurate diagnosis.').
-refer_medical(psoriasis):- 
-    format('Refer to a medical facility for Skin biopsy, Blood test, and Joint Imaging for an accurate diagnosis.').
-refer_medical(diarrhea):-
-    format('Refer to a medical facility for Stool test, Blood test, and Endoscopy for an accurate diagnosis.').
-refer_medical(tuberculosis):-
-    format('Refer to a medical facility for Tuberculin skin test, TB blood tests, Chest X-ray, and Sputum test for an accurate diagnosis.').
-refer_medical(chickenpox):-
-	format('Refer to a medical facility for Viral culture, PCR test, and Blood test for an accurate diagnosis.').
-refer_medical(influenza):-
-    format('Refer to a medical facility for Viral culture, Rapid Influenza diagnostic test, and RT-PCR test for an accurate diagnosis.').
-refer_medical(Disease):- !.
+/*asks the user about necessary information*/ 
 
 ask(Patient):-   
     format('What\'s the patient\'s name? Type name in lowercase letters.~n'),
@@ -132,6 +74,8 @@ ask_symptoms:-
    	findall(Symptom, patient_symptoms(Symptom), Symptoms), %check if no main symptoms
     Symptoms == [] ->  patient_has(OtherSymptoms); true.
 
+/*checks if the patient has the symptoms given by asking yes/no questions about it*/ 
+
 patient_has([]).
 patient_has([Symptom | OtherSymptoms]) :-
     (
@@ -157,17 +101,72 @@ patient_has([Symptom | OtherSymptoms]) :-
         )
     ).
 
+/*finds the diseases with matching symptoms as the user identifies with*/ 
+
 find_symptoms(FilterList, Symptoms) :-
     print([FilterList]), nl,
     findall(S, (disease(_, S), subset(FilterList, S)), SymptomLists),
     flatten(SymptomLists, Symptoms).
 
+/*counts the number of diseases with matching symptoms as the user identifies with*/ 
+
 count_symptoms(Disease, PatientSymptoms, Count):-
     disease(Disease, Symptoms),
     findall(SymptomElem, (member(SymptomElem, Symptoms), member(SymptomElem, PatientSymptoms)), MatchingSymptoms),
     length(MatchingSymptoms, Count).
-    
-/*rules and knowledge database*/ 
+
+/*prompts the user for the additional questions associated with the initial diagnosis*/ 
+
+additional_q(Patient, [Q|ListOfQuestions], [A|AnswerLabels]):-
+        format('~w~nAnswer "yes" or "no": ', [Q]),
+        nl,
+        read(Response),
+        length(ListOfQuestions, Length),
+        (Response = yes ; Response = no),
+        (   Response == yes ->
+            assert(additional_answers(Patient, A)),
+            ( Length > 0 ->  
+            	additional_q(Patient, ListOfQuestions, AnswerLabels)
+            ;   true
+            )
+         ; Response == no ->
+        	( Length > 0 ->  
+        	additional_q(Patient, ListOfQuestions, AnswerLabels)
+            ;   true)
+        ).
+
+/*determines the likelihood based on their answers to the additional questions for the initial diagnosis*/ 
+
+higher_likelihood(_, _, [], _) :- true.
+
+higher_likelihood(Patient, Disease, Questions, AnswerLabels):-
+    count_likelihood_symptoms(Patient, AnswerLabels, Count),
+    length(Questions, LengthQ),
+    (
+        Count > LengthQ * 0.25 ->
+            (format('Also, the patient\'s reported symptoms and medical history show that the probability of having ~w is higher.~n', [Disease]))
+    );
+    true,
+    !.
+
+
+/*determines the probability based on the number of symptoms the user identifies with in that specific disease*/ 
+
+% di ko pa natetest to hehe
+probability(Patient, Disease):-
+    findall(Symptom, patient_symptoms(Symptom), PatientSymptoms),
+    count_symptoms(Disease, PatientSymptoms, Count),
+    disease(Disease, AllSymptoms),
+    length(AllSymptoms, NumSymptoms),
+    (   (Count >= NumSymptoms*0.25, Count < NumSymptoms*0.5) ->
+    	format('The patient may have ~w disease. ~n', [Disease]) 
+    ; (   Count >= NumSymptoms*0.5, Count < NumSymptoms*0.75) -> 
+    	format('The patient likely have ~w disease. ~n', [Disease]) 
+    ; (   Count >= NumSymptoms*0.75) -> 
+    format('The patient most likely have ~w disease. ~n', [Disease])
+    ;    true).
+
+/*rules and knowledge base*/ 
 
 disease(hypertension, [headache, nosebleed, breath_shortness, loud_heartbeat, high_bp]).
 disease(scabies, [itching, skin_rash, itchy_rash, burrows]).
@@ -188,9 +187,13 @@ is_supporting_symptom([headache, nosebleed, breath_shortness, loud_heartbeat, it
                        vomiting, thickened_nails, joint_stiffness, urination_pain, pelvic_pressure, lower_back_pain,
                        extreme_hunger, blurry_vision, slow_healing_wounds, numbness]).
 
+/*counts the number of yes the user answered to the additional questions*/ 
+
 count_likelihood_symptoms(Patient, AnswerLabels, Count):-
     findall(Answer, (member(Answer, AnswerLabels), additional_answers(Patient, Answer)), CountedLikelihoodSymptoms),
     length(CountedLikelihoodSymptoms, Count).
+
+/*determines the likelihood based on their risk factors for the initial diagnosis*/ 
 
 higher_likelihood(hypertension, Patient, Age, BMI, Gender):-
     (Gender == f, Age > 65) ; 
@@ -230,6 +233,8 @@ higher_likelihood(influenza, Patient, Age, BMI, Gender):-
     Age > 65;
     BMI >= 30.
 
+/*the symptoms the user requires to have before being diagnosed with that disease*/ 
+
 diagnose(Patient, scabies):-
     has_symptom(Patient, burrows),
     (has_symptom(Patient, itching);
@@ -254,7 +259,7 @@ diagnose(Patient, uti):-
 
 diagnose(Patient, influenza):-
     has_symptom(Patient, fever),
-   	(has_symptom(Patient, cough);
+    (has_symptom(Patient, cough);
     has_symptom(Patient, sore_throat)),
     (has_symptom(Patient, runny_nose);
     has_symptom(Patient, body_aches);
@@ -320,7 +325,7 @@ diagnose(Patient, chickenpox):-
     has_symptom(Patient, itching)).
 
 
-
+/*the additional questions associated with each disease*/ 
 
 additional_q_db(uti, [
     'Did you previously have UTI?',
@@ -406,5 +411,22 @@ additional_a_db(influenza, [
 
 
 additional_a_db(Disease, []).
+
 valid_sex(Sex):- 
     member(Sex, [m, f]).
+
+/*the suggested medical tests associated with each disease*/ 
+
+refer_medical(uti):-
+	format('Refer to a medical facility for Urinalysis and/or Urine Culture for an accurate diagnosis.').
+refer_medical(psoriasis):- 
+    format('Refer to a medical facility for Skin biopsy, Blood test, and Joint Imaging for an accurate diagnosis.').
+refer_medical(diarrhea):-
+    format('Refer to a medical facility for Stool test, Blood test, and Endoscopy for an accurate diagnosis.').
+refer_medical(tuberculosis):-
+    format('Refer to a medical facility for Tuberculin skin test, TB blood tests, Chest X-ray, and Sputum test for an accurate diagnosis.').
+refer_medical(chickenpox):-
+	format('Refer to a medical facility for Viral culture, PCR test, and Blood test for an accurate diagnosis.').
+refer_medical(influenza):-
+    format('Refer to a medical facility for Viral culture, Rapid Influenza diagnostic test, and RT-PCR test for an accurate diagnosis.').
+refer_medical(Disease):- !.
