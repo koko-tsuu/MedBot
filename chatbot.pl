@@ -104,7 +104,6 @@ patient_has([Symptom | OtherSymptoms]) :-
 /*finds the diseases with matching symptoms as the user identifies with*/ 
 
 find_symptoms(FilterList, Symptoms) :-
-    print([FilterList]), nl,
     findall(S, (disease(_, S), subset(FilterList, S)), SymptomLists),
     flatten(SymptomLists, Symptoms).
 
