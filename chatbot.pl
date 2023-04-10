@@ -151,7 +151,6 @@ higher_likelihood(Patient, Disease, Questions, AnswerLabels):-
 
 /*determines the probability based on the number of symptoms the user identifies with in that specific disease*/ 
 
-% di ko pa natetest to hehe
 probability(Patient, Disease):-
     findall(Symptom, patient_symptoms(Symptom), PatientSymptoms),
     count_symptoms(Disease, PatientSymptoms, Count),
