@@ -33,9 +33,12 @@ diagnosis(Patient, Age, BMI, Sex) :-
             higher_likelihood(Patient, Disease, Questions, AnswerLabels),
             refer_medical(Disease)
          
-        ;    true)
+        ;    true),
 
-    ;  format('Unfortunately, we cannot diagnose ~w with any disease right now based on your symptoms. ~n However, ~w can always go to the local clinic and ask for a check-up.~n', [Patient, Patient])
+        sleep(4),fill_buffer(user_input)
+
+    ;  format('Unfortunately, we cannot diagnose ~w with any disease right now based on your symptoms. ~nHowever, ~w can always go to the local clinic and ask for a check-up.~n', [Patient, Patient]),
+    sleep(4),fill_buffer(user_input)
     ).
 
 /*asks the user about necessary information*/ 
